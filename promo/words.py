@@ -42,7 +42,7 @@ for ch in C['chunks']:
 parts.append((cur_s, total))
 tw = []
 for n, (a, b) in enumerate(parts):
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(a), '-t', str(b - a), '-i', 'vo.wav', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', f'part{n}.wav'], check=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(a), '-t', str(b - a), '-i', 'vo_full.wav', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', f'part{n}.wav'], check=True)
     ws = transcribe(f'part{n}.wav', a); print('part', n, len(ws), 'words', flush=True); tw += ws
 json.dump(tw, open('transcript_words.json', 'w', encoding='utf-8'), ensure_ascii=False)
 
@@ -72,5 +72,5 @@ for ci, ch in enumerate(C['chunks']):
 for i in range(len(known) - 1):      # монотонность
     if known[i + 1]['s'] < known[i]['s']: known[i + 1]['s'] = known[i]['s']
     if known[i]['e'] > known[i + 1]['s'] and known[i]['e'] - known[i + 1]['s'] < 0.3: known[i]['e'] = known[i + 1]['s']
-json.dump(known, open('words.json', 'w', encoding='utf-8'), ensure_ascii=False)
+json.dump(known, open('words_full.json', 'w', encoding='utf-8'), ensure_ascii=False)
 print('words.json', len(known), 'last end', known[-1]['e'])

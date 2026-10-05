@@ -1,7 +1,7 @@
 """Склеивает TTS-куски в vo.wav (начало озвучки = HOOK секунд), пишет chunks.json с границами кусков."""
 import json, wave, numpy as np, os, glob
 
-HOOK = 10.4          # длина затравки до начала голоса
+HOOK = 0.0           # полная озвучка без затравки (затравку добавляет cut_audio)
 SR = 24000
 GAP = 0.55           # пауза между кусками
 S = json.load(open('script.json', encoding='utf-8'))
@@ -25,6 +25,6 @@ for i, tx in enumerate(texts):
     out.append(np.zeros(int(gap * SR), np.float32)); t += gap
 vo = np.concatenate(out)
 peak = np.abs(vo).max(); vo = vo / peak * 0.9
-w = wave.open('vo.wav', 'wb'); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((vo * 32767).astype(np.int16).tobytes()); w.close()
+w = wave.open('vo_full.wav', 'wb'); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((vo * 32767).astype(np.int16).tobytes()); w.close()
 json.dump({'hook': HOOK, 'total': len(vo) / SR, 'chunks': meta}, open('chunks.json', 'w'), ensure_ascii=False, indent=1)
-print('vo.wav', round(len(vo) / SR, 1), 's')
+print('vo_full.wav', round(len(vo) / SR, 1), 's')

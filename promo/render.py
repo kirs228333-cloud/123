@@ -7,17 +7,20 @@ W, H, FPS = 1920, 1080, 30
 RED = (255, 52, 52); VIOLET = (178, 102, 255); WHITE = (244, 240, 246)
 S = json.load(open('script.json', encoding='utf-8'))
 WORDS = json.load(open('words.json', encoding='utf-8'))
-HOOK = json.load(open('chunks.json', encoding='utf-8'))['hook']
+HOOK = json.load(open('meta.json'))['hook']
 FILES = sorted(glob.glob('../*.jpg'))                 # номер картинки = позиция в алфавитном списке (1..26)
 def IMG(n): return FILES[n - 1]
 
 # ---------- слова / строки ----------
 LINES = S['lines'] + S['outro']
 def norm(w): return re.sub(r'[^0-9a-zа-я]', '', w.lower().replace('ё', 'е'))
-line_rng = []; k = 0
-for l in LINES:
-    n = len(l.split()); line_rng.append((k, k + n)); k += n
-assert k == len(WORDS), (k, len(WORDS))
+line_rng = [[0, 0] for _ in LINES]
+for j, w in enumerate(WORDS):
+    r = line_rng[w['line']]
+    if r[1] == 0: r[0] = j
+    r[1] = j + 1
+line_rng = [tuple(r) for r in line_rng]
+def has(i): return line_rng[i][1] > line_rng[i][0]
 def line_start(i): return WORDS[line_rng[i][0]]['s']
 def line_end(i): return WORDS[line_rng[i][1] - 1]['e']
 def T(line, prefix, nth=0):
@@ -26,7 +29,7 @@ def T(line, prefix, nth=0):
         if norm(WORDS[j]['w']).startswith(norm(prefix)):
             if c == nth: return WORDS[j]['s']
             c += 1
-    print('WARN trigger not found', line, prefix, file=sys.stderr); return line_start(line)
+    return None
 
 # ---------- шрифты ----------
 _fc = {}
