@@ -2,3 +2,13 @@
 out/
 node_modules/
 vo16.wav
+tts/
+tmpseg/
+snaps/
+part*.wav
+vo_fx.wav
+vo.wav
+mix.wav
+tts.log
+nohup.out
+__pycache__/
